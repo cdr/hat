@@ -1,0 +1,50 @@
+name: ci
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  fmt:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: make fmt
+        uses: ./ci/image
+        with:
+          args: make fmt
+
+  lint:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: make lint
+        uses: ./ci/image
+        with:
+          args: make lint
+
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: make test
+        uses: ./ci/image
+        with:
+          args: make test
+        env:
+          COVERALLS_TOKEN: ${{ secrets.github_token }}
+
+      - name: Upload coverage.html
+        uses: actions/upload-artifact@master
+        with:
+          name: coverage
+          path: ci/out/coverage.html
